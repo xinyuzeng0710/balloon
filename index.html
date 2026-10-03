@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>數位氣球大冒險</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:"Microsoft JhengHei",sans-serif;background:linear-gradient(135deg,#eef7ff,#f7efff);color:#283451;min-height:100vh}
+button,input{font:inherit}button{cursor:pointer}.wrap{max-width:1180px;margin:auto;padding:22px}.panel,.gamebox{background:#fff;border:2px solid #dfe6fa;border-radius:26px;box-shadow:0 12px 32px #5867a51a;padding:24px}
+h1{margin:0;text-align:center;color:#5968d8;font-size:clamp(34px,5vw,58px)}.sub{text-align:center;color:#717b96;margin:8px 0 22px}.setup{max-width:760px;margin:20px auto}
+.names,.modes,.answers,.actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{padding:12px;background:#f7f9ff;border-radius:16px}.field label{font-weight:800;display:block;margin-bottom:6px}.field input{width:100%;padding:11px;border:1.5px solid #ccd7f2;border-radius:12px}
+.mode,.secondary,.answer{background:white;border:2px solid #d7def2;border-radius:15px;padding:13px;color:#45516d;font-weight:700}.mode{text-align:left}.mode.active{border-color:#6975e9;background:#f0f1ff}
+.primary{border:0;border-radius:15px;padding:14px 20px;background:#6675e8;color:white;font-weight:900;box-shadow:0 5px 0 #4d59bb}.primary:active{transform:translateY(2px);box-shadow:0 3px 0 #4d59bb}.center{text-align:center}.hidden{display:none!important}
+.rules{margin-top:18px;padding:14px;background:#f7f9ff;border-radius:16px;color:#65708d}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.badge{background:#eef0ff;color:#5966ca;padding:8px 14px;border-radius:999px;font-weight:800}
+.players{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}.player{background:#fff;border:2px solid #e0e6f5;border-radius:22px;padding:12px;text-align:center;transition:.2s}.player.active{border-color:#6975e9;box-shadow:0 0 0 4px #e9ebff;transform:translateY(-2px)}
+.name{font-weight:900;font-size:19px}.score{font-weight:900;font-size:18px}.zone{height:185px;display:flex;align-items:flex-end;justify-content:center;position:relative}.balloon{width:66px;height:80px;border-radius:52% 52% 48% 48%;display:flex;align-items:center;justify-content:center;font-size:31px;transition:.35s;box-shadow:inset -9px -9px #0000000d,0 7px 16px #00000012}
+.player:nth-child(1) .balloon{background:#7cc8ff}.player:nth-child(2) .balloon{background:#f5a7d0}.player:nth-child(3) .balloon{background:#94dfbd}.player:nth-child(4) .balloon{background:#b9a7ff}
+.danger{animation:wobble .24s infinite alternate}.prepop{animation:prepop .65s}.pop{animation:pop .4s forwards}.confetti{position:absolute;top:45px;font-size:30px;opacity:0}.confetti.show{animation:confetti 1s}
+@keyframes wobble{from{transform:rotate(-5deg)}to{transform:rotate(5deg) scale(1.05)}}@keyframes prepop{0%{transform:scale(1)}55%{transform:scale(1.35)}100%{transform:scale(1.43)}}@keyframes pop{to{transform:scale(2.4);opacity:0}}@keyframes confetti{30%{opacity:1}100%{opacity:0;transform:scale(1.8) translateY(-30px)}}
+.gamebox{margin-top:16px;min-height:250px}.drawrow{display:flex;justify-content:space-between;align-items:center;gap:12px}.turn{font-size:25px;font-weight:900;color:#4857c4}.help{color:#7a839b;margin-top:4px}.card{margin-top:18px;border:2px solid #dce4f4;border-radius:20px;padding:20px}.blue{background:#eff8ff;border-color:#91c9f4}.purple{background:#f7efff;border-color:#c5a9ee}.yellow{background:#fff8dc;border-color:#efd46c}.ct{font-size:22px;font-weight:900}.q{font-size:22px;font-weight:800;line-height:1.5;margin:12px 0}.answer{text-align:left}.feedback{margin-top:14px;font-size:18px;font-weight:800}.next{width:100%;margin-top:16px}.footer{display:flex;justify-content:space-between;align-items:center;margin-top:13px;color:#7b8398}.win{text-align:center}.boom{font-size:70px}
+@media(max-width:760px){.players{grid-template-columns:1fr 1fr}.names,.modes,.answers,.actions{grid-template-columns:1fr}.drawrow{flex-direction:column;align-items:stretch}.wrap{padding:10px}.zone{height:155px}}
+</style></head>
+<body><div class="wrap">
+<section id="setup" class="panel setup"><h1>🎈 數位氣球大冒險</h1><p class="sub">答題讓氣球變大，誰先把自己的氣球吹爆，誰就贏！</p>
+<div class="names">
+<div class="field"><label>玩家 1</label><input id="n0" value="小玩家 1"></div><div class="field"><label>玩家 2</label><input id="n1" value="小玩家 2"></div>
+<div class="field"><label>玩家 3</label><input id="n2" value="小玩家 3"></div><div class="field"><label>玩家 4</label><input id="n3" value="小玩家 4"></div>
+</div><h3>選擇遊戲長度</h3><div class="modes"><button class="mode active" data-mode="fast"><b>⚡ 快速局</b><br><small>約 5～10 分鐘｜爆破值 6～8</small></button><button class="mode" data-mode="normal"><b>🎈 一般局</b><br><small>約 10～15 分鐘｜爆破值 8～10</small></button></div>
+<div class="center"><button id="start" class="primary">開始冒險 🚀</button></div><div class="rules">🔵 知識挑戰：答對 +2　｜　🟣 情境挑戰：分享 +1，也可休息一回合　｜　🟡 突發事件：直接發生效果</div></section>
+<section id="game" class="hidden"><div class="top"><h1 style="font-size:34px;text-align:left">🎈 數位氣球大冒險</h1><div style="display:flex;gap:8px;align-items:center"><button id="soundToggle" class="secondary">🔊 音效開啟</button><div id="modeBadge" class="badge"></div></div></div><div id="players" class="players"></div>
+<div class="gamebox"><div class="drawrow"><div><div id="turn" class="turn"></div><div class="help">每位玩家卡牌比例相同，同一局題目不重複。</div></div><button id="draw" class="primary">🎴 抽卡</button></div><div id="card" class="card hidden"></div></div>
+<div class="footer"><span>👀 爆破分數是秘密！</span><button id="restart" class="secondary">↩ 回到設定</button></div></section></div>
+<script>
+const B=[
+["AI回答得很完整，就代表內容一定正確嗎？",["是","不是，還是需要確認"],1],
+["想知道網路消息是不是真的，哪個方法比較好？",["查看不同可靠來源","只看第一個結果"],0],
+["陌生網友問你的電話號碼，可以直接告訴他嗎？",["可以","不可以"],1],
+["哪一種密碼通常比較安全？",["12345678","較長而且不容易被猜到的密碼"],1],
+["看到「免費送遊戲點數」的陌生連結，應該？",["先確認來源","馬上點進去"],0],
+["AI算出的答案和你自己算的不一樣，可以？",["重新檢查步驟","一定以AI為準"],0],
+["想把同學的照片放到網路上，最好先？",["詢問同學是否同意","直接上傳"],0],
+["網路文章沒有清楚寫資料來源時，應該？",["再找其他來源確認","完全相信"],0],
+["AI沒有理解你的問題時，可以？",["換個更清楚的問法","一直輸入同一句"],0],
+["眼睛看螢幕一段時間後覺得累，應該？",["休息並看看遠方","繼續撐著看"],0],
+["收到「快轉發，不然帳號會消失」的訊息，可以先？",["查證消息","立刻轉傳"],0],
+["做報告找到網路資料時，較好的做法是？",["理解後整理並注意來源","整段直接複製"],0],
+["AI可以幫忙學習，但重要資訊還需要？",["查證","完全不用確認"],0],
+["網友說自己跟你同年，就一定可以信任嗎？",["不一定","一定"],0],
+["收到不認識的人傳來的檔案，較安全的是？",["先不要隨便開啟","馬上下載"],0],
+["在網路留言時，哪個做法比較適合？",["尊重別人再表達想法","生氣就直接罵人"],0],
+["Google搜尋到很多答案時，哪個做法比較好？",["比較來源再判斷","看到標題就相信"],0],
+["想請AI教數學但不想直接拿答案，可以怎麼問？",["請它一步一步提示","只說答案給我"],0]
+];
+const P=["AI給你一個怪怪的答案，你會怎麼確認？","朋友想把同學的搞笑照片傳到群組，你會怎麼做？","陌生網友問你讀哪間學校，你會怎麼回應？","兩個網站對同一件事寫得不一樣，你會怎麼辦？","朋友說「AI講的一定是對的！」你會怎麼回應？","看到一則很想分享但不知道真假的消息，你會怎麼做？","你想請AI教數學，但不想直接看到答案，你會怎麼問？","遊戲聊天室有人一直罵其他玩家，你會怎麼做？","同學把帳號密碼傳給你保管，你會怎麼處理？","有人在網路上邀請你私下見面，你會怎麼做？","AI的回答太難懂，你會怎麼請它重新說明？","發現自己看影片看太久了但還想繼續，你會怎麼做？"];
+const E=[["💨 超強打氣筒","氣球 +3 分！",3],["🌬️ 順風來了","氣球 +2 分！",2],["✨ 神奇氣流","氣球 +1 分！",1],["🎁 打氣補給箱","氣球 +2 分！",2],["😴 氣球休息站","這回合 +0 分。",0],["🫧 氣泡緩衝區","這回合 +0 分。",0],["⚡ 快速充氣","氣球 +2 分！",2],["🌟 好運星","氣球 +1 分！",1]];
+
+let audioCtx=null,musicTimer=null,soundOn=true,musicStep=0;
+function ensureAudio(){
+ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+ if(audioCtx.state==="suspended") audioCtx.resume();
+}
+function tone(freq,dur=.12,type="sine",vol=.08,when=0){
+ if(!soundOn)return; ensureAudio();
+ const o=audioCtx.createOscillator(),g=audioCtx.createGain(),t=audioCtx.currentTime+when;
+ o.type=type;o.frequency.setValueAtTime(freq,t);
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+dur+.03);
+}
+function correctSound(){tone(523,.12,"sine",.09);tone(659,.12,"sine",.09,.11);tone(784,.22,"sine",.1,.22)}
+function noPointSound(){tone(260,.14,"triangle",.07);tone(196,.26,"triangle",.065,.13)}
+function eventSound(points){if(points>0){tone(440,.1,"square",.045);tone(554,.1,"square",.045,.09);tone(659,.16,"square",.05,.18)}else noPointSound()}
+function explosionSound(){
+ if(!soundOn)return;ensureAudio();
+ const len=audioCtx.sampleRate*.8,buf=audioCtx.createBuffer(1,len,audioCtx.sampleRate),data=buf.getChannelData(0);
+ for(let i=0;i<len;i++)data[i]=(Math.random()*2-1)*Math.pow(1-i/len,2);
+ const src=audioCtx.createBufferSource(),filter=audioCtx.createBiquadFilter(),gain=audioCtx.createGain();
+ src.buffer=buf;filter.type="lowpass";filter.frequency.value=900;gain.gain.setValueAtTime(.38,audioCtx.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.8);
+ src.connect(filter);filter.connect(gain);gain.connect(audioCtx.destination);src.start();
+ tone(110,.5,"sawtooth",.14);tone(70,.65,"sawtooth",.1,.04);
+}
+
+function dangerCountdownSound(){
+ if(!soundOn)return;
+ // 加速警示：低頻心跳 + 高頻提示音
+ [0,.16,.30,.42,.52].forEach((t,i)=>{
+   tone(i<2?150:180,.09,"square",.055,t);
+   tone(i<2?440:520,.06,"sine",.04,t+.035);
+ });
+}
+function cheerSound(){
+ if(!soundOn)return; ensureAudio();
+ // 短版群眾歡呼質感：帶通噪音 + 勝利和弦
+ const dur=1.25,len=Math.floor(audioCtx.sampleRate*dur);
+ const buf=audioCtx.createBuffer(1,len,audioCtx.sampleRate),data=buf.getChannelData(0);
+ for(let i=0;i<len;i++){
+   const t=i/len;
+   const env=Math.sin(Math.min(1,t*3)*Math.PI/2)*Math.pow(1-t,.45);
+   data[i]=(Math.random()*2-1)*env*.22;
+ }
+ const src=audioCtx.createBufferSource(),bpF=audioCtx.createBiquadFilter(),g=audioCtx.createGain();
+ src.buffer=buf;bpF.type="bandpass";bpF.frequency.value=1250;bpF.Q.value=.55;
+ g.gain.setValueAtTime(.001,audioCtx.currentTime);
+ g.gain.linearRampToValueAtTime(.24,audioCtx.currentTime+.12);
+ g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+dur);
+ src.connect(bpF);bpF.connect(g);g.connect(audioCtx.destination);src.start();
+ tone(523,.22,"sine",.07,.08);tone(659,.22,"sine",.07,.14);tone(784,.3,"sine",.08,.20);
+ tone(1046,.38,"triangle",.055,.42);
+}
+
+function musicTick(){
+ if(!soundOn||ended)return;
+ const seq=[146.83,174.61,164.81,146.83,196,174.61,164.81,130.81];
+ const f=seq[musicStep++%seq.length];
+ tone(f,.24,"triangle",.018); tone(f*2,.08,"sine",.009,.02);
+}
+function startMusic(){stopMusic();if(!soundOn)return;ensureAudio();musicStep=0;musicTick();musicTimer=setInterval(musicTick,430)}
+function stopMusic(){if(musicTimer){clearInterval(musicTimer);musicTimer=null}}
+
+let names=[],scores=[],decks=[],cur=0,target=7,mode="fast",bp=[],pp=[],ep=[],open=false,ended=false;
+const $=s=>document.querySelector(s),sh=a=>{a=[...a];for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a},deck=()=>sh(["blue","blue","purple","yellow"]);
+const esc=s=>s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+document.querySelectorAll(".mode").forEach(x=>x.onclick=()=>{document.querySelectorAll(".mode").forEach(y=>y.classList.remove("active"));x.classList.add("active");mode=x.dataset.mode});
+$("#restart").onclick=()=>{stopMusic();$("#game").classList.add("hidden");$("#setup").classList.remove("hidden")};
+$("#start").onclick=()=>{ensureAudio();names=[0,1,2,3].map(i=>$("#n"+i).value.trim()||`小玩家 ${i+1}`);newGame();$("#setup").classList.add("hidden");$("#game").classList.remove("hidden");startMusic()};
+function newGame(){scores=[0,0,0,0];decks=[deck(),deck(),deck(),deck()];bp=sh(B);pp=sh(P);ep=sh(E);target=mode==="fast"?6+Math.floor(Math.random()*3):8+Math.floor(Math.random()*3);cur=0;open=false;ended=false;$("#modeBadge").textContent=mode==="fast"?"⚡ 快速局":"🎈 一般局";makePlayers();clear();render()}
+function makePlayers(){$("#players").innerHTML=names.map((n,i)=>`<div class="player"><div class="name">${esc(n)}</div><div class="zone"><div class="balloon"></div><div class="confetti">✨ 🎉 ⭐ 🎊 ✨</div></div><div class="score"><span>0</span> 分</div></div>`).join("")}
+function render(){document.querySelectorAll(".player").forEach((p,i)=>{p.classList.toggle("active",i===cur&&!ended);p.querySelector(".score span").textContent=scores[i];let b=p.querySelector(".balloon"),r=Math.min(scores[i]/target,.98);b.style.width=66+r*68+"px";b.style.height=80+r*84+"px";b.classList.toggle("danger",r>=.7&&!ended)});$("#turn").textContent=ended?"🏆 本局結束！":`🎮 輪到 ${names[cur]}！`}
+function clear(){$("#card").className="card hidden";$("#card").innerHTML="";$("#draw").disabled=false}
+function pool(t){if(t==="b"){if(!bp.length)bp=sh(B);return bp.pop()}if(t==="p"){if(!pp.length)pp=sh(P);return pp.pop()}if(!ep.length)ep=sh(E);return ep.pop()}
+$("#draw").onclick=()=>{if(open||ended)return;open=true;$("#draw").disabled=true;if(!decks[cur].length)decks[cur]=deck();let t=decks[cur].pop();t==="blue"?blue():t==="purple"?purple():yellow()};
+function blue(){let q=pool("b"),c=$("#card");c.className="card blue";c.innerHTML=`<div class="ct">🔵 知識挑戰</div><div class="q">${q[0]}</div><div class="answers">${q[1].map((x,i)=>`<button class="answer" data-i="${i}">${String.fromCharCode(65+i)}. ${x}</button>`).join("")}</div><div class="feedback"></div>`;c.querySelectorAll(".answer").forEach(b=>b.onclick=()=>{c.querySelectorAll("button").forEach(x=>x.disabled=true);let ok=+b.dataset.i===q[2];ok?correctSound():noPointSound();finish(ok?2:0,ok?"✨ 答對！氣球 +2 分！":"💡 這回合 +0。正確答案："+q[1][q[2]])})}
+function purple(){let q=pool("p"),c=$("#card");c.className="card purple";c.innerHTML=`<div class="ct">🟣 情境挑戰</div><div class="q">${q}</div><div class="help">沒有唯一答案，說說自己的想法即可。</div><div class="actions"><button class="primary share">💬 分享完成 +1</button><button class="secondary rest">😴 休息一回合 +0</button></div><div class="feedback"></div>`;c.querySelector(".share").onclick=()=>{c.querySelectorAll("button").forEach(x=>x.disabled=true);correctSound();finish(1,"🌟 謝謝分享！氣球 +1 分！")};c.querySelector(".rest").onclick=()=>{c.querySelectorAll("button").forEach(x=>x.disabled=true);noPointSound();finish(0,"☁️ 沒問題，這題先休息。")}}
+function yellow(){let x=pool("e"),c=$("#card");c.className="card yellow";c.innerHTML=`<div class="ct">🟡 突發事件</div><div class="q center">${x[0]}</div><div class="center" style="font-size:20px;font-weight:900">${x[1]}</div><div class="feedback"></div>`;eventSound(x[2]);finish(x[2],"")}
+function finish(n,msg){scores[cur]+=n;render();if(scores[cur]>=target){win();return}let f=$("#card").querySelector(".feedback");if(f&&msg)f.textContent=msg;$("#card").insertAdjacentHTML("beforeend",`<button class="primary next">下一位玩家 →</button>`);$("#card").querySelector(".next").onclick=()=>{cur=(cur+1)%4;open=false;clear();render()}}
+function win(){ended=true;stopMusic();dangerCountdownSound();$("#draw").disabled=true;let p=document.querySelectorAll(".player")[cur],b=p.querySelector(".balloon"),cf=p.querySelector(".confetti");b.classList.remove("danger");b.classList.add("prepop");$("#card").className="card";$("#card").innerHTML=`<div class="win"><div class="q">😳 ${esc(names[cur])} 的氣球好像快撐不住了……</div><p>等等……等等……</p></div>`;setTimeout(()=>{b.classList.remove("prepop");b.classList.add("pop");cf.classList.add("show");explosionSound();setTimeout(()=>{b.classList.remove("pop");b.textContent="";b.style.opacity=0;cheerSound();$("#card").innerHTML=`<div class="win"><div class="boom">💥🎉</div><h2>POP！</h2><div class="q">${esc(names[cur])} 的氣球爆破！</div><p>🏆 獲得本局勝利！</p><button id="again" class="primary">用相同玩家再玩一局</button></div>`;$("#again").onclick=()=>{newGame();startMusic()};render()},420)},650)}
+
+$("#soundToggle").onclick=()=>{
+ soundOn=!soundOn;
+ $("#soundToggle").textContent=soundOn?"🔊 音效開啟":"🔇 靜音";
+ if(soundOn){ensureAudio();if(!ended)startMusic()}else stopMusic();
+};
+
+</script></body></html>
